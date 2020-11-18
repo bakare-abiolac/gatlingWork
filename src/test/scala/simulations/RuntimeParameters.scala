@@ -23,7 +23,8 @@ class RuntimeParameters extends Simulation {
     println(s"Total test duration: ${testDuration} seconds")
   }
 
-  val httpConf = http.baseUrl("http://localhost:8080/app/")
+
+  val httpConf = http.baseUrl("http://localhost:8080/app")
     .header("Accept", "application/json")
 
   def getAllVideoGames() = {
@@ -42,7 +43,7 @@ class RuntimeParameters extends Simulation {
   setUp(
     scn.inject(
       nothingFor(5 seconds),
-      rampUsers(userCount) during (rampDuration second)
+      rampUsers(userCount) during(rampDuration second)
     )
   ).protocols(httpConf)
     .maxDuration(testDuration seconds)

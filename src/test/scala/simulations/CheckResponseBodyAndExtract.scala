@@ -10,20 +10,22 @@ class CheckResponseBodyAndExtract extends Simulation {
 
   val scn = scenario("Check JSON Path")
 
-      .exec(http("Get specific game")
-      .get("videogames/1")
-      .check(jsonPath("$.name").is("Resident Evil 4")))
+    .exec(http("Get specific game")
+    .get("videogames/1")
+    .check(jsonPath("$.name").is("Resident Evil 4")))
 
-      .exec(http("Get all video games")
-      .get("videogames")
-      .check(jsonPath("$[1].id").saveAs("gameId")))
-      .exec { session => println(session); session}
+    .exec(http("Get all video games")
+    .get("videogames")
+    .check(jsonPath("$[1].id").saveAs("gameId")))
+    .exec {session => println(session); session}
 
-      .exec(http("Get specific game")
-      .get("videogames/${gameId}")
-      .check(jsonPath("$.name").is("Gran Turismo 3"))
-      .check(bodyString.saveAs("responseBody")))
-        .exec { session => println(session("responseBody").as[String]); session}
+    .exec(http("Get specific game")
+    .get("videogames/${gameId}")
+    .check(jsonPath("$.name").is("Gran Turismo 3"))
+    .check(bodyString.saveAs("responseBody")))
+    .exec {session => println(session("responseBody").as[String]); session}
+
+
 
 
   setUp(
@@ -31,3 +33,4 @@ class CheckResponseBodyAndExtract extends Simulation {
   ).protocols(httpConf)
 
 }
+

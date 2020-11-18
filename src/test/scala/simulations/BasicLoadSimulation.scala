@@ -20,7 +20,7 @@ class BasicLoadSimulation extends Simulation {
 
   def getSpecificGame() = {
     exec(
-      http("Get Specific Game")
+      http("GetSpecific Game")
         .get("videogames/2")
         .check(status.is(200))
     )
@@ -33,22 +33,11 @@ class BasicLoadSimulation extends Simulation {
     .pause(5)
     .exec(getAllVideoGames())
 
-  val scn2 = scenario("Basic Load Simulation 2")
-    .exec(getAllVideoGames())
-    .pause(5)
-    .exec(getSpecificGame())
-    .pause(5)
-    .exec(getAllVideoGames())
-
   setUp(
     scn.inject(
       nothingFor(5 seconds),
       atOnceUsers(5),
       rampUsers(10) during (10 seconds)
-    ).protocols(httpConf.inferHtmlResources()),
-    scn2.inject(
-      atOnceUsers(500)
-    ).protocols(httpConf)
+    ).protocols(httpConf.inferHtmlResources())
   )
-
 }

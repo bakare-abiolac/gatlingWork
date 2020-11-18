@@ -20,7 +20,7 @@ class FixedDurationLoadSimulation extends Simulation {
 
   def getSpecificGame() = {
     exec(
-      http("Get Specific Game")
+      http("GetSpecific Game")
         .get("videogames/2")
         .check(status.is(200))
     )
@@ -35,12 +35,11 @@ class FixedDurationLoadSimulation extends Simulation {
         .exec(getAllVideoGames())
     }
 
-
   setUp(
     scn.inject(
       nothingFor(5 seconds),
       atOnceUsers(10),
-      rampUsers(50) during (30 second)
+      rampUsers(50) during (30 seconds)
     ).protocols(httpConf.inferHtmlResources())
   ).maxDuration(1 minute)
 

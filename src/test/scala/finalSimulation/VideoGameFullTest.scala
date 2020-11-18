@@ -12,7 +12,7 @@ import scala.util.Random
 class VideoGameFullTest extends Simulation {
 
   val httpConf = http
-    .baseUrl("http://video-game-db.eu-west-2.elasticbeanstalk.com/app/")
+    .baseUrl("http://localhost:8080/app/")
     .header("Accept", "application/json")
 
   /*** Variables ***/
@@ -27,12 +27,13 @@ class VideoGameFullTest extends Simulation {
   val now = LocalDate.now()
   val pattern = DateTimeFormatter.ofPattern("yyyy-MM-dd")
 
-  /*** Helper Methods ***/
+/*** Helper Methods ***/
   private def getProperty(propertyName: String, defaultValue: String) = {
     Option(System.getenv(propertyName))
       .orElse(Option(System.getProperty(propertyName)))
       .getOrElse(defaultValue)
   }
+
 
   def randomString(length: Int) = {
     rnd.alphanumeric.filter(_.isLetter).take(length).mkString
@@ -49,69 +50,72 @@ class VideoGameFullTest extends Simulation {
     "releaseDate" -> getRandomDate(now, rnd),
     "reviewScore" -> rnd.nextInt(100),
     "category" -> ("Category-" + randomString(6)),
-    "rating" -> ("Rating-" + randomString(4))
+    "rating" -> ("Rating-" +randomString(4))
   ))
 
   /*** Before ***/
   before {
-    println(s"Running test with ${userCount} users")
+    println(s"Running our test with ${userCount} users")
     println(s"Ramping users over ${rampDuration} seconds")
-    println(s"Total Test duration: ${testDuration} seconds")
+    println(s"Total test duration: ${testDuration} seconds")
   }
 
-  /*** HTTP Calls ***/
+/*** HTTP Calls ***/
   def getAllVideoGames() = {
     exec(
-      http("Get All Video Games")
+      http("Get all video games")
         .get("videogames")
-        .check(status.is(200)))
+        .check(status.is(200))
+    )
   }
 
   def postNewGame() = {
-    feed(customFeeder).
-      exec(http("Post New Game")
-        .post("videogames")
-        .body(ElFileBody("bodies/NewGameTemplate.json")).asJson //template file goes in gating/resources/bodies
-        .check(status.is(200)))
+      feed(customFeeder)
+        .exec(http("Post New Game")
+          .post("videogames/")
+          .body(ElFileBody("bodies/NewGameTemplate.json")).asJson
+          .check(status.is(200)))
   }
 
   def getLastPostedGame() = {
-    exec(http("Get Last Posted Game")
-      .get("videogames/${gameId}")
-      .check(jsonPath("$.name").is("${name}"))
-      .check(status.is(200)))
+    exec(
+      http("Get Last Posted Game")
+        .get("videogames/${gameId}")
+        .check(jsonPath("$.name").is("${name}"))
+        .check(status.is(200)))
   }
 
   def deleteLastPostedGame() = {
-    exec(http("Delete Last Posted Game")
-      .delete("videogames/${gameId}")
-      .check(status.is(200)))
+    exec(
+      http("Delete Last Posted Game")
+        .delete("videogames/${gameId}")
+        .check(status.is(200)))
   }
 
   /*** Scenario Design ***/
-  val scn = scenario("Video Game DB")
+  val scn = scenario("Video Game Full Test")
     .forever() {
-      exec(getAllVideoGames())
-        .pause(2)
-        .exec(postNewGame())
-        .pause(2)
-        .exec(getLastPostedGame())
-        .pause(2)
-        .exec(deleteLastPostedGame())
+       exec(getAllVideoGames())
+       .pause(2)
+       .exec(postNewGame())
+       .pause(2)
+       .exec(getLastPostedGame())
+       .pause(2)
+       .exec(deleteLastPostedGame())
     }
 
   /*** Setup Load Simulation ***/
   setUp(
     scn.inject(
       nothingFor(5 seconds),
-      rampUsers(userCount) during (rampDuration seconds))
-  )
-    .protocols(httpConf)
+      rampUsers(userCount) during (rampDuration seconds)
+    )
+  ).protocols(httpConf)
     .maxDuration(testDuration seconds)
 
   /*** After ***/
   after {
     println("Stress test completed")
   }
-
 }
+

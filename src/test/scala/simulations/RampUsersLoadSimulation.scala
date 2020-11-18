@@ -20,7 +20,7 @@ class RampUsersLoadSimulation extends Simulation {
 
   def getSpecificGame() = {
     exec(
-      http("Get Specific Game")
+      http("GetSpecific Game")
         .get("videogames/2")
         .check(status.is(200))
     )

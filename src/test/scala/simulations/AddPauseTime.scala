@@ -28,4 +28,5 @@ class AddPauseTime extends Simulation {
     scn.inject(atOnceUsers(1))
   ).protocols(httpConf)
 
+
 }

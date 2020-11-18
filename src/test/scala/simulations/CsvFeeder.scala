@@ -5,7 +5,7 @@ import io.gatling.http.Predef._
 
 class CsvFeeder extends Simulation {
 
-  val httpConf = http.baseUrl("http://localhost:8080/app/")
+  val httpConf = http.baseUrl("http://localhost:8080/app")
     .header("Accept", "application/json")
 
   val csvFeeder = csv("data/gameCsvFile.csv").circular
@@ -22,12 +22,12 @@ class CsvFeeder extends Simulation {
   }
 
   val scn = scenario("Csv Feeder test")
-      .exec(getSpecificVideoGame())
+    .exec(getSpecificVideoGame())
 
 
 
   setUp(
-    scn.inject(atOnceUsers(1))
-  ).protocols(httpConf)
+      scn.inject(atOnceUsers(1))
+    ).protocols(httpConf)
 
 }

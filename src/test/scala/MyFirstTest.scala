@@ -12,7 +12,7 @@ class MyFirstTest extends Simulation {
   // 2 Scenario Definition
   val scn = scenario("My First Test")
     .exec(http("Get All Games")
-      .get("videogames"))
+       .get("videogames"))
 
   // 3 Load Scenario
   setUp(
