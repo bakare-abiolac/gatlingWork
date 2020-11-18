@@ -113,8 +113,8 @@ class VideoGameFullTest extends Simulation {
   ).protocols(httpConf)
     .maxDuration(testDuration seconds)
     .assertions(
-      global.responseTime.max.lt(2),
-      global.successfulRequests.percent.gt(99)
+      global.responseTime.max.lt(200),
+      global.successfulRequests.percent.gt(90)
     )
 
   /*** After ***/
